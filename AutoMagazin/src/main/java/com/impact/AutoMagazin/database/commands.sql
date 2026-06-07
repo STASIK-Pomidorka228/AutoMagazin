@@ -1,0 +1,15 @@
+-- create
+CREATE TABLE Cars (
+  id PRIMARY KEY,
+  brand VARCHAR(50) NOT NULL,
+  model VARCHAR(50) NOT NULL,
+  price DECIMAL(10,2)NOT NULL
+);
+
+CREATE TABLE brands(
+  id PRIMARY KEY,
+  name VARCHAR(50) NOT NULL
+);
+
+
+
