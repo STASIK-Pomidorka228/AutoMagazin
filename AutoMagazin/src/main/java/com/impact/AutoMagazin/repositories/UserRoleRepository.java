@@ -1,12 +1,13 @@
 package com.impact.AutoMagazin.repositories;
 
-import com.impact.AutoMagazin.models.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import com.impact.AutoMagazin.models.UserRole;
+import java.util.Optional;
 
-public class UserRoleRepository {
+@Repository
+public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
-    @Repository
-    public interface UserRoleRepository<Optional> extends JpaRepository<UserRole, com.impact.lessons.entities.UserRoleId> {
-        Optional<UserRole> findByUserId(long userId)
+    Optional<UserRole> findByUserId(Long userId);
+
 }

@@ -2,15 +2,20 @@ package com.impact.AutoMagazin.config;
 
 import com.impact.AutoMagazin.models.UserCredentials;
 import com.impact.AutoMagazin.repositories.CredentialsRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class JwtAuthFilter {
+public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CredentialsRepository credentialsRepository;
@@ -70,4 +75,4 @@ public class JwtAuthFilter {
         filterChain.doFilter(request, response);
     }
 }
-}
+
