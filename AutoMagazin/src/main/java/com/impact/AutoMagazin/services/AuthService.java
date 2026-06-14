@@ -3,16 +3,18 @@ package com.impact.AutoMagazin.services;
 import com.impact.AutoMagazin.config.JwtService;
 import com.impact.AutoMagazin.dto.CreateUserRequest;
 import com.impact.AutoMagazin.dto.LoginRequest;
+import com.impact.AutoMagazin.dto.LoginResponse;
 import com.impact.AutoMagazin.dto.RefreshRequest;
+import com.impact.AutoMagazin.dto.UserResponse;
 import com.impact.AutoMagazin.models.*;
 import com.impact.AutoMagazin.repositories.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -21,6 +23,7 @@ public class AuthService {
     private final CredentialsRepository credentialsRepository;
     private final UserPersonalDataRepository personalDataRepository;
     private final UserRoleRepository userRoleRepository;
+    private final UserEmailRepository userEmailRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -29,6 +32,7 @@ public class AuthService {
                        CredentialsRepository credentialsRepository,
                        UserPersonalDataRepository personalDataRepository,
                        UserRoleRepository userRoleRepository,
+                       UserEmailRepository userEmailRepository,
                        RefreshTokenRepository refreshTokenRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService) {
@@ -36,13 +40,14 @@ public class AuthService {
         this.credentialsRepository = credentialsRepository;
         this.personalDataRepository = personalDataRepository;
         this.userRoleRepository = userRoleRepository;
+        this.userEmailRepository = userEmailRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
 
     @Transactional
-    public Map<String, String> register(CreateUserRequest request) {
+    public LoginResponse register(CreateUserRequest request) {
         if (credentialsRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
@@ -60,28 +65,30 @@ public class AuthService {
 
         UserPersonalData personalData = new UserPersonalData();
         personalData.setUser(user);
-        personalData.setFirstName(request.getFirstName());
         personalData.setLastName(request.getLastName());
-        personalData.setBirthDate(request.getBirthDate());
         personalDataRepository.save(personalData);
+
+        UserEmail userEmail = new UserEmail();
+        userEmail.setUser(user);
+        userEmail.setEmail(request.getEmail());
+        userEmail.setIsPrimary(true);
+        userEmailRepository.save(userEmail);
 
         UserRole role = new UserRole();
         role.setUserId(user.getId());
         role.setRoleId((short) 1);
         userRoleRepository.save(role);
 
-        String accessToken = jwtService.generateAccessToken(user.getUsername(), user.getId(), resolveRoleName(role.getRoleId()));
+        String roleName = resolveRoleName(role.getRoleId());
+        String accessToken = jwtService.generateAccessToken(user.getUsername(), user.getId(), roleName);
         String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
         saveRefreshToken(user.getId(), refreshToken);
 
-        return Map.of(
-            "accessToken", accessToken,
-            "refreshToken", refreshToken
-        );
+        return new LoginResponse(accessToken, refreshToken, buildUserResponse(user), "ВЫ ЗАРЕГИСТРИРОВАНЫ");
     }
 
-    public Map<String, String> login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         UserCredentials credentials = credentialsRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Invalid username or password"));
 
@@ -92,6 +99,10 @@ public class AuthService {
         User user = userRepository.findById(credentials.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (!user.isEnabled()) {
+            throw new RuntimeException("Account disabled");
+        }
+
         UserRole userRole = userRoleRepository.findByUserId(user.getId())
                 .orElse(null);
         String roleName = userRole != null ? resolveRoleName(userRole.getRoleId()) : "USER";
@@ -101,13 +112,10 @@ public class AuthService {
 
         saveRefreshToken(user.getId(), refreshToken);
 
-        return Map.of(
-            "accessToken", accessToken,
-            "refreshToken", refreshToken
-        );
+        return new LoginResponse(accessToken, refreshToken, buildUserResponse(user), null);
     }
 
-    public Map<String, String> refresh(RefreshRequest request) {
+    public LoginResponse refresh(RefreshRequest request) {
         RefreshToken stored = refreshTokenRepository.findByToken(request.getRefreshToken())
                 .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
 
@@ -119,6 +127,10 @@ public class AuthService {
         User user = userRepository.findById(stored.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (!user.isEnabled()) {
+            throw new RuntimeException("Account disabled");
+        }
+
         UserRole userRole = userRoleRepository.findByUserId(user.getId())
                 .orElse(null);
         String roleName = userRole != null ? resolveRoleName(userRole.getRoleId()) : "USER";
@@ -129,10 +141,45 @@ public class AuthService {
         refreshTokenRepository.delete(stored);
         saveRefreshToken(user.getId(), newRefreshToken);
 
-        return Map.of(
-            "accessToken", newAccessToken,
-            "refreshToken", newRefreshToken
-        );
+        return new LoginResponse(newAccessToken, newRefreshToken, buildUserResponse(user), null);
+    }
+
+    public UserResponse getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new RuntimeException("Not authenticated");
+        }
+        String username = (String) auth.getPrincipal();
+
+        UserCredentials credentials = credentialsRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        User user = userRepository.findById(credentials.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return buildUserResponse(user);
+    }
+
+    private UserResponse buildUserResponse(User user) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setUsername(user.getUsername());
+
+        personalDataRepository.findByUserId(user.getId()).ifPresent(data -> {
+            response.setFirstName(data.getFirstName());
+            response.setLastName(data.getLastName());
+            response.setBirthDate(data.getBirthDate());
+        });
+
+        userEmailRepository.findByUserId(user.getId()).ifPresent(email -> {
+            response.setEmail(email.getEmail());
+        });
+
+        userRoleRepository.findByUserId(user.getId()).ifPresent(role -> {
+            response.setRole(resolveRoleName(role.getRoleId()));
+        });
+
+        return response;
     }
 
     private void saveRefreshToken(Long userId, String token) {
@@ -147,8 +194,6 @@ public class AuthService {
         if (roleId == null) return "USER";
         return switch (roleId) {
             case 1 -> "USER";
-            case 2 -> "AUTHOR";
-            case 3 -> "EDITOR";
             case 4 -> "ADMIN";
             default -> "USER";
         };

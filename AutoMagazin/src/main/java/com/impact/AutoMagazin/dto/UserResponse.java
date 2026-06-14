@@ -16,6 +16,8 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private String username;
+    private String email;
+    private String role;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 }

@@ -90,6 +90,24 @@ public class UserService {
     }
 
     @Transactional
+    public void updateRole(Long userId, String roleName) {
+        Short roleId = switch (roleName.toUpperCase()) {
+            case "ADMIN" -> 4;
+            default -> 1;
+        };
+
+        UserRole userRole = userRoleRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    UserRole r = new UserRole();
+                    r.setUserId(userId);
+                    return r;
+                });
+
+        userRole.setRoleId(roleId);
+        userRoleRepository.save(userRole);
+    }
+
+    @Transactional
     public void deleteUser(Long userId) {
         credentialsRepository.deleteById(userId);
         personalDataRepository.findByUserId(userId).ifPresent(personalDataRepository::delete);
@@ -107,6 +125,20 @@ public class UserService {
             response.setLastName(data.getLastName());
             response.setBirthDate(data.getBirthDate());
         });
+        userEmailRepository.findByUserId(user.getId()).ifPresent(email -> {
+            response.setEmail(email.getEmail());
+        });
+        userRoleRepository.findByUserId(user.getId()).ifPresent(role -> {
+            response.setRole(roleName(role.getRoleId()));
+        });
         return response;
+    }
+
+    private String roleName(Short roleId) {
+        if (roleId == null) return "USER";
+        return switch (roleId) {
+            case 4 -> "ADMIN";
+            default -> "USER";
+        };
     }
 }

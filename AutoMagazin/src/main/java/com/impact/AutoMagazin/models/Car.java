@@ -1,27 +1,21 @@
 package com.impact.AutoMagazin.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Car {
-    private int id;
+
+    private Long id;
     private String brand;
     private String model;
-    private double volume;
-
-    public Car(int id, String brand, String model, double volume){
-        this.id = id;
-        this.brand = brand;
-        this.model = model;
-        this.volume = volume;
-    }
-    public int getId(){
-        return id;
-    }
-    public String getBrand(){
-        return brand;
-    }
-    public String getModel(){
-        return model;
-    }
-    public double getVolume(){
-        return volume;
-    }
+    private String name;
+    private Double price;
+    private Double volume;
+    private Double power;
 }

@@ -3,6 +3,7 @@ package com.impact.AutoMagazin.controllers;
 import com.impact.AutoMagazin.dto.*;
 import com.impact.AutoMagazin.services.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserListResponse> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
@@ -52,7 +54,16 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("/{id}/role")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> updateRole(@PathVariable Long id,
+                                            @RequestBody UpdateRoleRequest request) {
+        userService.updateRole(id, request.getRole());
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();

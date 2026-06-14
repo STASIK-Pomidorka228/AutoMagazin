@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/test
     username: postgres
-    password: 1234
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -26,4 +26,6 @@ spring:
 
 app:
   jwt:
-    secret: "very_secret_key_very_secret_key_12345"
+    secret: ${JWT_SECRET}
+    access-token-expiration: 900000
+    refresh-token-expiration: 604800000
