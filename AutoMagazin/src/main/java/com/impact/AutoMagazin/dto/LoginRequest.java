@@ -3,7 +3,7 @@ package com.impact.AutoMagazin.dto;
 import lombok.Data;
 
 @Data
-public class LoginResponse {
+public class LoginRequest {
     private String username;
     private String password;
 }

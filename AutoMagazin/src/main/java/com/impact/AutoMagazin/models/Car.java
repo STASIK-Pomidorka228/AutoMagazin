@@ -1,4 +1,4 @@
-package com.impact.AutoMagazin.controllers;
+package com.impact.AutoMagazin.models;
 
 public class Car {
     private int id;
@@ -7,7 +7,7 @@ public class Car {
     private double volume;
 
     public Car(int id, String brand, String model, double volume){
-        this.id =  id;
+        this.id = id;
         this.brand = brand;
         this.model = model;
         this.volume = volume;
@@ -20,9 +20,8 @@ public class Car {
     }
     public String getModel(){
         return model;
-        }
-        public double getVolume(){
-            return  volume;
-        }
     }
-
+    public double getVolume(){
+        return volume;
+    }
+}

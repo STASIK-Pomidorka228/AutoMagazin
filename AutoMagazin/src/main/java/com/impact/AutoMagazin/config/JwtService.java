@@ -1,11 +1,8 @@
 package com.impact.AutoMagazin.config;
 
-
-
-
-import com.impact.AutoMagazin.models.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -13,23 +10,23 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final String SECRET = "very_secret_key_very_secret_key_12345";
+    @Value("${app.jwt.secret}")
+    private String SECRET;
 
-    public String generateAccessToken(User user) {
+    public String generateAccessToken(String username, Long userId, String role) {
         return Jwts.builder()
-                .subject(user.getUsername())
-                .claim("userId", user.getId())
-                .claim("role", user.getRole())
-                .claim("email", user.getEmail())
+                .subject(username)
+                .claim("userId", userId)
+                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
                 .compact();
     }
 
-    public String generateRefreshToken(User user) {
+    public String generateRefreshToken(String username) {
         return Jwts.builder()
-                .subject(user.getUsername())
+                .subject(username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))

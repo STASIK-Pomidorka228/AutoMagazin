@@ -1,6 +1,7 @@
 package com.impact.AutoMagazin.controllers;
 
 import java.util.List;
+import com.impact.AutoMagazin.models.Car;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
