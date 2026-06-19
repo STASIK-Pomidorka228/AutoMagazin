@@ -1,8 +1,10 @@
 package com.impact.AutoMagazin.Database;
 
+import jakarta.validation.constraints.AssertFalse;
+import org.hibernate.mapping.List;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.List;
+
 
 public class CarDatabase {
     @GetMapping

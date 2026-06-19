@@ -20,21 +20,27 @@ public class Car {
 
     }
     public int getId(){
+
         return id;
     }
     public String getbrand(){
+
         return brand;
     }
     public String getModel(){
         return model;
+
     }
     public double getVolume(){
         return Volume;
+
     }
     public int getPower(){
         return Power;
+
     }
     public int getPrice(){
         return Price;
+
     }
 }
