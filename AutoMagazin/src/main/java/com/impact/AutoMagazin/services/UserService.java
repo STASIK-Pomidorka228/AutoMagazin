@@ -91,10 +91,11 @@ public class UserService {
 
     @Transactional
     public void updateRole(Long userId, String roleName) {
-        Short roleId = switch (roleName.toUpperCase()) {
-            case "ADMIN" -> 4;
-            default -> 1;
-        };
+        Short roleId;
+        switch (roleName.toUpperCase()) {
+            case "ADMIN": roleId = 4; break;
+            default: roleId = 1;
+        }
 
         UserRole userRole = userRoleRepository.findByUserId(userId)
                 .orElseGet(() -> {
@@ -136,9 +137,9 @@ public class UserService {
 
     private String roleName(Short roleId) {
         if (roleId == null) return "USER";
-        return switch (roleId) {
-            case 4 -> "ADMIN";
-            default -> "USER";
-        };
+        switch (roleId) {
+            case 4: return "ADMIN";
+            default: return "USER";
+        }
     }
 }

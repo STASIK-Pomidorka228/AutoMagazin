@@ -192,10 +192,9 @@ public class AuthService {
 
     private String resolveRoleName(Short roleId) {
         if (roleId == null) return "USER";
-        return switch (roleId) {
-            case 1 -> "USER";
-            case 4 -> "ADMIN";
-            default -> "USER";
-        };
+        switch (roleId) {
+            case 4: return "ADMIN";
+            default: return "USER";
+        }
     }
 }

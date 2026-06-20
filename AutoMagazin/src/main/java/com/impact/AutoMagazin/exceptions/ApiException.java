@@ -1,12 +1,13 @@
 package com.impact.AutoMagazin.exceptions;
 
-import com.impact.AutoMagazin.exceptions.ErrorCode;
+import lombok.Getter;
 
+@Getter
 public class ApiException extends RuntimeException {
-    private final int errorCode;
+    private final ErrorCode errorCode;
 
-    public ApiException(String message, int errorCode) {
-        super(message);
+    public ApiException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 }

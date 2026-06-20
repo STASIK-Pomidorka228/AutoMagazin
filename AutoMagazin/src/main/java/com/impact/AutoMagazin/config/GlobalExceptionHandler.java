@@ -26,8 +26,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("error", message));
     }
-    @ExceptionHandler(com.impact.AutoMagazin.exception.ApiException.class)
-    public ResponseEntity<Map<String, String>> handleApi(com.impact.AutoMagazin.exception.ApiException e) {
+    @ExceptionHandler(com.impact.AutoMagazin.exceptions.ApiException.class)
+    public ResponseEntity<Map<String, String>> handleApi(com.impact.AutoMagazin.exceptions.ApiException e) {
         return ResponseEntity.status(e.getErrorCode().getCode())
                 .body(Map.of("error", e.getMessage()));
     }

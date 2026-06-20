@@ -1,0 +1,550 @@
+{
+	"info": {
+		"name": "AutoMagazin API Demo",
+		"description": "Коллекция для демонстрации всех эндпоинтов AutoMagazin\n\n## Демо-пользователи\n| Логин | Пароль | Роль |\n|-------|--------|------|\n| admin | admin123 | ADMIN |\n| user  | user123  | USER  |\n\n## Переменные окружения\n- `{{base_url}}` = http://localhost:8080\n- `{{token}}` — вставьте JWT токен после логина\n- `{{userId}}` — ID пользователя\n- `{{carId}}` — ID автомобиля",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 Auth (публичные)",
+			"item": [
+				{
+					"name": "1. Регистрация нового пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set('token', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+									"    pm.collectionVariables.set('userId', jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"demo\",\n  \"lastName\": \"Демов\",\n  \"email\": \"demo@automagazin.ru\",\n  \"password\": \"demo123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Регистрация нового пользователя. Поля: username, lastName, email, password."
+					},
+					"response": [
+						{
+							"name": "Успешная регистрация",
+							"status": "OK",
+							"code": 200,
+							"header": [{ "key": "Content-Type", "value": "application/json" }],
+							"body": "{\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"user\": {\n    \"id\": 3,\n    \"firstName\": null,\n    \    \"lastName\": \"Demo\",\n    \"username\": \"demo\",\n    \"email\": \"demo@automagazin.ru\",\n    \"role\": \"USER\",\n    \"birthDate\": null\n  },\n  \"message\": \"REGISTRATION_SUCCESSFUL\"\n}"
+						}
+					]
+				},
+				{
+					"name": "2. Вход в систему (USER)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set('token', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+									"    pm.collectionVariables.set('userId', jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"user\",\n  \"password\": \"user123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Вход как обычный пользователь. В ответе приходят access/refresh токены и данные пользователя."
+					},
+					"response": [
+						{
+							"name": "Успешный вход",
+							"status": "OK",
+							"code": 200,
+      "body": "{\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"user\": {\n    \"id\": 2,\n    \"firstName\": \"Peter\",\n    \"lastName\": \"User\",\n    \"username\": \"user\",\n    \"email\": \"user@automagazin.ru\",\n    \"role\": \"USER\",\n    \"birthDate\": \"1995-06-20\"\n  },\n  \"message\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "3. Вход как администратор (ADMIN)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set('token', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+									"    pm.collectionVariables.set('userId', jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Вход как администратор. После этого запроса можно выполнять ADMIN-эндпоинты."
+					},
+					"response": [
+						{
+							"name": "Вход администратора",
+							"status": "OK",
+							"code": 200,
+      "body": "{\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"user\": {\n    \"id\": 1,\n    \"firstName\": \"John\",\n    \"lastName\": \"Admin\",\n    \"username\": \"admin\",\n    \"email\": \"admin@automagazin.ru\",\n    \"role\": \"ADMIN\",\n    \"birthDate\": \"1990-01-15\"\n  },\n  \"message\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "4. Профиль текущего пользователя",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "me"]
+						},
+						"description": "Получение данных текущего пользователя по JWT-токену. Требуется Bearer-авторизация."
+					},
+					"response": [
+						{
+							"name": "Профиль пользователя",
+							"status": "OK",
+							"code": 200,
+							"body": "{\n  \"id\": 2,\n  \"firstName\": \"Peter\",\n  \"lastName\": \"User\",\n  \"username\": \"user\",\n  \"email\": \"user@automagazin.ru\",\n  \"role\": \"USER\",\n  \"birthDate\": \"1995-06-20\"\n}"
+						}
+					]
+				},
+				{
+					"name": "5. Обновление токенов (Refresh)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accessToken\": \"{{token}}\",\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "refresh"]
+						},
+						"description": "Обновление access-токена с помощью refresh-токена. Оба токена нужно отправить в теле запроса."
+					},
+					"response": [
+						{
+							"name": "Обновление токенов",
+							"status": "OK",
+							"code": 200,
+							"body": "{\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9...new...\",\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9...new...\",\n  \"user\": { ... },\n  \"message\": null\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "🚗 Автомобили (/api/cars)",
+			"item": [
+				{
+					"name": "6. Список всех автомобилей",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/cars",
+							"host": ["{{base_url}}"],
+							"path": ["api", "cars"]
+						},
+						"description": "Получение списка всех автомобилей. В каталоге 9 предустановленных марок: Renault, Dacia, Ford, Skoda, Audi."
+					},
+					"response": [
+						{
+							"name": "Список машин",
+							"status": "OK",
+							"code": 200,
+							"body": "[\n  { \"id\": 1, \"brand\": \"Renault\", \"model\": \"Megane\", \"name\": \"Renault Megane\", \"price\": 15000, \"volume\": 1.5, \"power\": 115 },\n  { \"id\": 2, \"brand\": \"Dacia\", \"model\": \"Duster\", \"name\": \"Dacia Duster\", \"price\": 12000, \"volume\": 1.6, \"power\": 105 },\n  { \"id\": 3, \"brand\": \"Ford\", \"model\": \"Fiesta\", \"name\": \"Ford Fiesta\", \"price\": 14000, \"volume\": 1.0, \"power\": 85 },\n  { \"id\": 4, \"brand\": \"Skoda\", \"model\": \"Octavia\", \"name\": \"Skoda Octavia\", \"price\": 18000, \"volume\": 1.4, \"power\": 150 },\n  { \"id\": 5, \"brand\": \"Skoda\", \"model\": \"Superb\", \"name\": \"Skoda Superb\", \"price\": 25000, \"volume\": 2.0, \"power\": 190 },\n  { \"id\": 6, \"brand\": \"Audi\", \"model\": \"QuatroA7\", \"name\": \"Audi A7 Quattro\", \"price\": 45000, \"volume\": 3.0, \"power\": 340 },\n  { \"id\": 7, \"brand\": \"Audi\", \"model\": \"RS3\", \"name\": \"Audi RS3\", \"price\": 40000, \"volume\": 2.5, \"power\": 400 },\n  { \"id\": 8, \"brand\": \"Audi\", \"model\": \"A6\", \"name\": \"Audi A6\", \"price\": 35000, \"volume\": 2.0, \"power\": 245 },\n  { \"id\": 9, \"brand\": \"Audi\", \"model\": \"RS7\", \"name\": \"Audi RS7\", \"price\": 70000, \"volume\": 4.0, \"power\": 600 }\n]"
+						}
+					]
+				},
+				{
+					"name": "7. Создать автомобиль (ADMIN)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"brand\": \"Tesla\",\n  \"model\": \"Model 3\",\n  \"name\": \"Tesla Model 3\",\n  \"price\": 55000,\n  \"volume\": 0.0,\n  \"power\": 450\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/cars",
+							"host": ["{{base_url}}"],
+							"path": ["api", "cars"]
+						},
+						"description": "Создание нового автомобиля в каталоге. Только для ADMIN. ID присваивается автоматически."
+					},
+					"response": [
+						{
+							"name": "Машина создана",
+							"status": "OK",
+							"code": 200,
+							"body": "{\n  \"id\": 10,\n  \"brand\": \"Tesla\",\n  \"model\": \"Model 3\",\n  \"name\": \"Tesla Model 3\",\n  \"price\": 55000,\n  \"volume\": 0.0,\n  \"power\": 450\n}"
+						}
+					]
+				},
+				{
+					"name": "8. Обновить автомобиль полностью (ADMIN)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"brand\": \"Tesla\",\n  \"model\": \"Model 3 Performance\",\n  \"name\": \"Tesla Model 3 Performance\",\n  \"price\": 65000,\n  \"volume\": 0.0,\n  \"power\": 510\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/cars/10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "cars", "10"]
+						},
+						"description": "Полное обновление автомобиля (PUT — все поля обязательны). Только для ADMIN."
+					},
+					"response": [
+						{
+							"name": "Машина обновлена",
+							"status": "OK",
+							"code": 200,
+							"body": "{\n  \"id\": 10,\n  \"brand\": \"Tesla\",\n  \"model\": \"Model 3 Performance\",\n  \"name\": \"Tesla Model 3 Performance\",\n  \"price\": 65000,\n  \"volume\": 0.0,\n  \"power\": 510\n}"
+						}
+					]
+				},
+				{
+					"name": "9. Частичное обновление (ADMIN)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 59000,\n  \"power\": 480\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/cars/10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "cars", "10"]
+						},
+						"description": "Частичное обновление (PATCH — можно указать только изменяемые поля). Только для ADMIN."
+					},
+					"response": [
+						{
+							"name": "Машина обновлена частично",
+							"status": "OK",
+							"code": 200,
+							"body": "{\n  \"id\": 10,\n  \"brand\": \"Tesla\",\n  \"model\": \"Model 3\",\n  \"name\": \"Tesla Model 3\",\n  \"price\": 59000,\n  \"volume\": 0.0,\n  \"power\": 480\n}"
+						}
+					]
+				},
+				{
+					"name": "10. Удалить автомобиль (ADMIN)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/api/cars/10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "cars", "10"]
+						},
+						"description": "Удаление автомобиля из каталога по ID. Только для ADMIN."
+					},
+					"response": [
+						{
+							"name": "Машина удалена",
+							"status": "OK",
+							"code": 200,
+							"body": "{}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "👥 Пользователи (/users)",
+			"item": [
+				{
+					"name": "11. Список всех пользователей (ADMIN)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": ["{{base_url}}"],
+							"path": ["users"]
+						},
+						"description": "Получение списка всех зарегистрированных пользователей. Только для ADMIN."
+					},
+					"response": [
+						{
+							"name": "Список пользователей",
+							"status": "OK",
+							"code": 200,
+							"body": "{\n  \"users\": [\n    { \"id\": 1, \"username\": \"admin\", \"firstName\": \"John\", \"lastName\": \"Admin\", \"email\": \"admin@automagazin.ru\", \"role\": \"ADMIN\", \"birthDate\": \"1990-01-15\" },\n    { \"id\": 2, \"username\": \"user\", \"firstName\": \"Peter\", \"lastName\": \"User\", \"email\": \"user@automagazin.ru\", \"role\": \"USER\", \"birthDate\": \"1995-06-20\" }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "12. Получить пользователя по ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/users/{{userId}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{userId}}"]
+						},
+						"description": "Получение данных конкретного пользователя по ID."
+					},
+					"response": [
+						{
+							"name": "Пользователь найден",
+							"status": "OK",
+							"code": 200,
+							"body": "{\n  \"id\": 2,\n  \"firstName\": \"Peter\",\n  \"lastName\": \"User\",\n  \"username\": \"user\",\n  \"email\": \"user@automagazin.ru\",\n  \"role\": \"USER\",\n  \"birthDate\": \"1995-06-20\"\n}"
+						}
+					]
+				},
+				{
+					"name": "13. Обновить личные данные",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Peter\",\n  \"lastName\": \"User-Peterson\",\n  \"birthDate\": \"1995-06-20\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{userId}}/personal-data",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{userId}}", "personal-data"]
+						},
+						"description": "Обновление имени, фамилии и даты рождения пользователя."
+					},
+					"response": [
+						{
+							"name": "Данные обновлены",
+							"status": "OK",
+							"code": 200,
+							"body": "{}"
+						}
+					]
+				},
+				{
+					"name": "14. Обновить дату рождения",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"birthdate\": \"1995-06-20\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{userId}}/birth-date",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{userId}}", "birth-date"]
+						},
+						"description": "Обновление только даты рождения."
+					},
+					"response": [
+						{
+							"name": "Дата обновлена",
+							"status": "OK",
+							"code": 200,
+							"body": "{}"
+						}
+					]
+				},
+				{
+					"name": "15. Сменить пароль",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{userId}}/password",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{userId}}", "password"]
+						},
+						"description": "Смена пароля пользователя."
+					},
+					"response": [
+						{
+							"name": "Пароль изменён",
+							"status": "OK",
+							"code": 200,
+							"body": "{}"
+						}
+					]
+				},
+				{
+					"name": "16. Установить email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": {{userId}},\n  \"email\": \"newemail@automagazin.ru\",\n  \"isPrimary\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/email",
+							"host": ["{{base_url}}"],
+							"path": ["users", "email"]
+						},
+						"description": "Установка/обновление email для пользователя."
+					},
+					"response": [
+						{
+							"name": "Email установлен",
+							"status": "OK",
+							"code": 200,
+							"body": "{}"
+						}
+					]
+				},
+				{
+					"name": "17. Изменить роль пользователя (ADMIN)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"role\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/2/role",
+							"host": ["{{base_url}}"],
+							"path": ["users", "2", "role"]
+						},
+						"description": "Изменение роли пользователя. Доступные роли: USER, ADMIN. Только для ADMIN."
+					},
+					"response": [
+						{
+							"name": "Роль изменена",
+							"status": "OK",
+							"code": 200,
+							"body": "{}"
+						}
+					]
+				},
+				{
+					"name": "18. Удалить пользователя (ADMIN)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{base_url}}/users/3",
+							"host": ["{{base_url}}"],
+							"path": ["users", "3"]
+						},
+						"description": "Удаление пользователя по ID. Только для ADMIN."
+					},
+					"response": [
+						{
+							"name": "Пользователь удалён",
+							"status": "OK",
+							"code": 200,
+							"body": "{}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{ "key": "base_url", "value": "http://localhost:8080", "type": "string" },
+		{ "key": "token", "value": "", "type": "string" },
+		{ "key": "refreshToken", "value": "", "type": "string" },
+		{ "key": "userId", "value": "", "type": "string" },
+		{ "key": "carId", "value": "", "type": "string" }
+	]
+}

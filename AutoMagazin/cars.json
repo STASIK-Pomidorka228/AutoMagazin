@@ -1,11 +1,73 @@
-[
-  {"id": 1, "brand": "Renault", "model": "Megane", "name": "Renault Megane", "price": 15000, "volume": 1.5, "power": 115},
-  {"id": 2, "brand": "Dacia", "model": "Duster", "name": "Dacia Duster", "price": 12000, "volume": 1.6, "power": 105},
-  {"id": 3, "brand": "Ford", "model": "Fiesta", "name": "Ford Fiesta", "price": 14000, "volume": 1.0, "power": 85},
-  {"id": 4, "brand": "Skoda", "model": "Octavia", "name": "Skoda Octavia", "price": 18000, "volume": 1.4, "power": 150},
-  {"id": 5, "brand": "Skoda", "model": "Superb", "name": "Skoda Superb", "price": 25000, "volume": 2.0, "power": 190},
-  {"id": 6, "brand": "Audi", "model": "QuatroA7", "name": "Audi A7 Quattro", "price": 45000, "volume": 3.0, "power": 340},
-  {"id": 7, "brand": "Audi", "model": "RS3", "name": "Audi RS3", "price": 40000, "volume": 2.5, "power": 400},
-  {"id": 8, "brand": "Audi", "model": "A6", "name": "Audi A6", "price": 35000, "volume": 2.0, "power": 245},
-  {"id": 9, "brand": "Audi", "model": "RS7", "name": "Audi RS7", "price": 70000, "volume": 4.0, "power": 600}
-]
+[ {
+  "id" : 1,
+  "brand" : "Renault",
+  "model" : "Megane",
+  "name" : "Renault Megane",
+  "price" : 15000.0,
+  "volume" : 1.5,
+  "power" : 115.0
+}, {
+  "id" : 2,
+  "brand" : "Dacia",
+  "model" : "Duster",
+  "name" : "Dacia Duster",
+  "price" : 12000.0,
+  "volume" : 1.6,
+  "power" : 105.0
+}, {
+  "id" : 3,
+  "brand" : "Ford",
+  "model" : "Fiesta",
+  "name" : "Ford Fiesta",
+  "price" : 14000.0,
+  "volume" : 1.0,
+  "power" : 85.0
+}, {
+  "id" : 4,
+  "brand" : "Skoda",
+  "model" : "Octavia",
+  "name" : "Skoda Octavia",
+  "price" : 18000.0,
+  "volume" : 1.4,
+  "power" : 150.0
+}, {
+  "id" : 5,
+  "brand" : "Skoda",
+  "model" : "Superb",
+  "name" : "Skoda Superb",
+  "price" : 25000.0,
+  "volume" : 2.0,
+  "power" : 190.0
+}, {
+  "id" : 6,
+  "brand" : "Audi",
+  "model" : "QuatroA7",
+  "name" : "Audi A7 Quattro",
+  "price" : 45000.0,
+  "volume" : 3.0,
+  "power" : 340.0
+}, {
+  "id" : 7,
+  "brand" : "Audi",
+  "model" : "RS3",
+  "name" : "Audi RS3",
+  "price" : 40000.0,
+  "volume" : 2.5,
+  "power" : 400.0
+}, {
+  "id" : 8,
+  "brand" : "Audi",
+  "model" : "A6",
+  "name" : "Audi A6",
+  "price" : 35000.0,
+  "volume" : 2.0,
+  "power" : 245.0
+}, {
+  "id" : 9,
+  "brand" : "Audi",
+  "model" : "RS7",
+  "name" : "Audi RS7",
+  "price" : 70000.0,
+  "volume" : 4.0,
+  "power" : 600.0
+} ]
